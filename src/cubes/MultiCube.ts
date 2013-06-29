@@ -93,25 +93,7 @@ module demo.cubes
             super();
             this.setup(data);
         }
-
-        //var half_width  = (this.width  / 2);
-        //var half_height = (this.height / 2);
-        //var half_depth  = (this.depth  / 2);
-        //for (var z = 0; z < this.depth; z++) {
-        //    for (var y = 0; y < this.height; y++) {
-        //        for (var x = 0; x < this.width; x++) {
-        //            this.vertices.push( new THREE.Vector3((x + 0) - half_width, (y + 0) - half_height, (z + 0) - half_depth) );
-        //            this.vertices.push( new THREE.Vector3((x + 0) - half_width, (y + 0) - half_height, (z + 0) - half_depth) );
-        //            this.vertices.push( new THREE.Vector3((x + 0) - half_width, (y + 0) - half_height, (z + 0) - half_depth) );
-        //            this.vertices.push( new THREE.Vector3((x + 0) - half_width, (y + 0) - half_height, (z + 0) - half_depth) );
-        //            this.vertices.push( new THREE.Vector3((x + 0) - half_width, (y + 0) - half_height, (z + 0) - half_depth) );
-        //            this.vertices.push( new THREE.Vector3((x + 0) - half_width, (y + 0) - half_height, (z + 0) - half_depth) );
-        //            this.vertices.push( new THREE.Vector3((x + 0) - half_width, (y + 0) - half_height, (z + 0) - half_depth) );
-        //            this.vertices.push( new THREE.Vector3((x + 0) - half_width, (y + 0) - half_height, (z + 0) - half_depth) );
-        //        }
-        //    }
-        //}
-
+        
         private setup(data:demo.data.Data3D<number>): void {  
             var table = {
                 positions :  [ new THREE.Vector3(0, 0, 0),    // 0
