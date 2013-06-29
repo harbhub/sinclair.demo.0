@@ -80,19 +80,36 @@ var demo;
         var Cube = (function () {
             function Cube(multicube, value, offset, x, y, z) {
                 this.multicube = multicube;
+
                 this.value = value;
+
                 this.offset = offset;
+
                 this.x = x;
+
                 this.y = y;
+
                 this.z = z;
+
                 this.positions = new Array(24);
+
                 this.normals = new Array(24);
+
                 this.texcoords = new Array(24);
+
                 this.faces = new Array(6);
+
                 this.faces_shadow = new Array(6);
             }
+            Cube.prototype.setValue = function (value) {
+                this.value = value;
+
+                this.computeFaceVisibility(true);
+            };
+
             Cube.prototype.setFace = function (i, face) {
                 this.faces[i] = face;
+
                 this.faces_shadow[i] = this.faces[i].clone();
             };
             Cube.prototype.show = function () {
@@ -105,42 +122,66 @@ var demo;
             };
             Cube.prototype.hideFace = function (i) {
                 this.faces[i].a = 0;
+
                 this.faces[i].b = 0;
+
                 this.faces[i].c = 0;
+
                 this.faces[i].d = 0;
+
                 this.multicube.verticesNeedUpdate = true;
             };
 
             Cube.prototype.showFace = function (i) {
                 this.faces[i].a = this.faces_shadow[i].a;
+
                 this.faces[i].b = this.faces_shadow[i].b;
+
                 this.faces[i].c = this.faces_shadow[i].c;
+
                 this.faces[i].d = this.faces_shadow[i].d;
+
                 this.multicube.verticesNeedUpdate = true;
             };
-            Cube.prototype.compute = function () {
+
+            Cube.prototype.computeFaceVisibility = function (includeAdjancent) {
+                var adjacent_index = [
+                    [this.x + 1, this.y, this.z],
+                    [this.x - 1, this.y, this.z],
+                    [this.x, this.y + 1, this.z],
+                    [this.x, this.y - 1, this.z],
+                    [this.x, this.y, this.z + 1],
+                    [this.x, this.y, this.z - 1]
+                ];
+
                 if (this.value != 0) {
-                    var index = [
-                        [this.x + 1, this.y, this.z],
-                        [this.x - 1, this.y, this.z],
-                        [this.x, this.y + 1, this.z],
-                        [this.x, this.y - 1, this.z],
-                        [this.x, this.y, this.z + 1],
-                        [this.x, this.y, this.z - 1]
-                    ];
-
                     for (var i = 0; i < 6; i++) {
-                        var adjacent = this.multicube.cubes.get(index[i][0], index[i][1], index[i][2]);
+                        var adjacent = this.multicube.cubes.get(adjacent_index[i][0], adjacent_index[i][1], adjacent_index[i][2]);
 
-                        if (adjacent == null)
-                            this.showFace(i); else if (adjacent.value == 0)
-                            this.showFace(i); else
+                        if (adjacent == null) {
+                            this.showFace(i);
+                        } else if (adjacent.value == 0) {
+                            this.showFace(i);
+                        } else {
                             this.hideFace(i);
+                        }
                     }
                 } else {
                     this.hide();
                 }
+
+                if (includeAdjancent) {
+                    for (var i = 0; i < 6; i++) {
+                        var adjacent = this.multicube.cubes.get(adjacent_index[i][0], adjacent_index[i][1], adjacent_index[i][2]);
+
+                        if (adjacent) {
+                            adjacent.computeFaceVisibility(false);
+                        }
+                    }
+                }
+
                 this.multicube.verticesNeedUpdate = true;
+
                 this.multicube.uvsNeedUpdate = true;
             };
             return Cube;
@@ -151,6 +192,7 @@ var demo;
             __extends(MultiCube, _super);
             function MultiCube(data) {
                 _super.call(this);
+
                 this.setup(data);
             }
             MultiCube.prototype.setup = function (data) {
@@ -207,42 +249,65 @@ var demo;
                 };
 
                 var half_width = (data.width / 2);
+
                 var half_height = (data.height / 2);
+
                 var half_depth = (data.depth / 2);
 
                 this.cubes = data.map(function (value, offset, x, y, z) {
                     var cube = new Cube(_this, value, offset, x, y, z);
-                    var idx = 0;
+
+                    var index = 0;
+
                     for (var face_index = 0; face_index < 6; face_index++) {
                         var length = _this.vertices.length;
+
                         var face = new THREE.Face4(length + 0, length + 1, length + 2, length + 3);
+
                         for (var vert_index = 0; vert_index < 4; vert_index++) {
                             var position = table.positions[table.index_positions[face_index][vert_index]].clone();
+
                             var normal = table.normals[table.index_normals[face_index][vert_index]].clone();
+
                             var texcoord = table.texcoords[table.index_texcoords[face_index][vert_index]].clone();
+
                             position.x = position.x + (x - half_width);
+
                             position.y = position.y + (y - half_height);
+
                             position.z = position.z + (z - half_depth);
+
                             _this.vertices.push(position);
+
                             _this.faceVertexUvs[0].push(texcoord);
+
                             face.normal = normal;
+
                             face.vertexNormals.push(normal);
-                            cube.positions[idx] = position;
-                            cube.texcoords[idx] = texcoord;
-                            cube.normals[idx] = normal;
-                            idx++;
+
+                            cube.positions[index] = position;
+
+                            cube.texcoords[index] = texcoord;
+
+                            cube.normals[index] = normal;
+
+                            index++;
                         }
+
                         _this.faces.push(face);
+
                         cube.setFace(face_index, face);
                     }
+
                     return cube;
                 });
 
                 this.cubes.each(function (cube, offset, x, y, z) {
-                    cube.compute();
+                    cube.computeFaceVisibility(false);
                 });
 
                 this.verticesNeedUpdate = true;
+
                 this.uvsNeedUpdate = true;
             };
             return MultiCube;
@@ -292,22 +357,25 @@ var demo;
         };
 
         App.prototype.setup_data = function () {
-            this.data = new demo.data.Data3D(16, 16, 16);
+            this.data = new demo.data.Data3D(4, 32, 32);
             for (var i = 0; i < this.data.values.length; i++) {
-                this.data.values[i] = Math.floor(Math.random() * 2);
+                var n = Math.floor(Math.random() * 200);
+
+                if (n > 50) {
+                    this.data.values[i] = 0;
+                } else {
+                    this.data.values[i] = 1;
+                }
             }
         };
 
         App.prototype.setup_object = function () {
             var materials = [
                 new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: false, side: THREE.FrontSide }),
-                new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, wireframeLinewidth: 20, transparent: true, opacity: 1, side: THREE.FrontSide })
+                new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, wireframeLinewidth: 1, transparent: true, opacity: 1, side: THREE.FrontSide })
             ];
 
             this.multicube = new demo.cubes.MultiCube(this.data);
-
-            this.multicube.cubes.each(function (cube, offset, x, y, z) {
-            });
 
             this.object = THREE.SceneUtils.createMultiMaterialObject(this.multicube, materials);
 
@@ -315,6 +383,19 @@ var demo;
         };
 
         App.prototype.render = function () {
+            var _this = this;
+            this.y += 1;
+
+            this.multicube.cubes.each(function (cube, offset, x, y, z) {
+                var cx = (x + Math.floor(_this.x)) % _this.data.width;
+
+                var cy = (y + Math.floor(_this.y)) % _this.data.height;
+
+                var cz = (z + Math.floor(_this.z)) % _this.data.depth;
+
+                cube.setValue(_this.data.get(cx, cy, cz));
+            });
+
             this.renderer.render(this.scene, this.camera);
         };
         return App;

@@ -16,7 +16,7 @@ module demo
         public object    : THREE.Object3D;
         public data      : demo.data.Data3D<number>;
         public multicube : demo.cubes.MultiCube;
-
+        
         constructor ( element: any, width: number, height: number ) 
         {
             this.element  = element;
@@ -52,9 +52,16 @@ module demo
         }
 
         private setup_data(): void {
-            this.data = new demo.data.Data3D<number>(16, 16, 16);
+            this.data = new demo.data.Data3D<number>(4, 32, 32);
             for(var i = 0; i < this.data.values.length; i++) { 
-                this.data.values[i] = Math.floor(Math.random() * 2);
+                var n = Math.floor(Math.random() * 200);
+
+                if(n > 50) {
+                    this.data.values[i] = 0;
+                }
+                else {
+                    this.data.values[i] = 1;
+                }
                 //this.data.values[i] = 1;
             }
         }
@@ -63,17 +70,10 @@ module demo
         {
             var materials = [
             new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, side: THREE.FrontSide } ),
-            new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 20, transparent: true, opacity: 1, side: THREE.FrontSide } )
+            new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 1, transparent: true, opacity: 1, side: THREE.FrontSide } )
             ];
             
             this.multicube = new demo.cubes.MultiCube(this.data);
-
-            this.multicube.cubes.each((cube, offset, x, y, z)=> {
-                //var n = Math.floor(Math.random() * 2);
-                //if(n == 0)
-                //cube.hide();
-            });
-
 
             this.object    = THREE.SceneUtils.createMultiMaterialObject( this.multicube, materials );
             
@@ -91,28 +91,20 @@ module demo
 
         public render(): void 
         {   
-            //this.geometry.setValue(this.v, Math.floor(Math.random()  * 10), Math.floor(Math.random()  * 10), Math.floor(Math.random()  * 10));
-            //this.geometry.setValue(this.v, this.x, this.y, this.z);
-            //this.geometry.update();
+            this.y += 1;
+
+            this.multicube.cubes.each((cube, offset, x, y, z) => {
+                
+                var cx = (x + Math.floor(this.x)) % this.data.width;
+
+                var cy = (y + Math.floor(this.y)) % this.data.height;
+
+                var cz = (z + Math.floor(this.z)) % this.data.depth;
+
+                cube.setValue( this.data.get(cx, cy, cz) );
+                    
+            });
             
-            //this.x = this.x + 1;
-
-            //if(this.x > 9) {
-            //    this.x = 0;
-            //    this.y = this.y + 1;
-            //}
-            //if(this.y > 9) {
-            //    this.x = 0;
-            //    this.y = 0;
-            //    this.z = this.z + 1;
-            //}
-            //if(this.z > 9) {
-            //    this.x = 0;
-            //    this.y = 0;
-            //    this.z = 0;
-            //    this.v = this.v == 1 ? 0 : 1;
-            //}   
-
             this.renderer.render(this.scene, this.camera);
         }
     }
