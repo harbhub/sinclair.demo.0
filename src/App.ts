@@ -9,13 +9,19 @@ module demo
 {
     export class App 
     {
-        public element   : any;
-        public renderer  : THREE.WebGLRenderer;
-        public camera    : THREE.PerspectiveCamera;
-        public scene     : THREE.Scene;
-        public object    : THREE.Object3D;
-        public data      : demo.data.Data3D<number>;
-        public multicube : demo.cubes.MultiCube;
+        public element       : any;
+        
+        public renderer      : THREE.WebGLRenderer;
+        
+        public camera        : THREE.PerspectiveCamera;
+        
+        public scene         : THREE.Scene;
+        
+        public mesh          : THREE.Object3D;
+
+        public data          : demo.data.Data3D<number>;
+
+        public multicube     : demo.cubes.MultiCube;
         
         constructor ( element: any, width: number, height: number ) 
         {
@@ -52,58 +58,51 @@ module demo
         }
 
         private setup_data(): void {
-            this.data = new demo.data.Data3D<number>(4, 32, 32);
+            this.data = new demo.data.Data3D<number>(12, 12, 12);
             for(var i = 0; i < this.data.values.length; i++) { 
                 var n = Math.floor(Math.random() * 200);
-
                 if(n > 50) {
                     this.data.values[i] = 0;
                 }
                 else {
                     this.data.values[i] = 1;
                 }
-                //this.data.values[i] = 1;
             }
         }
 
         private setup_object():void 
         {
+            // setup cube
+            var texture   = THREE.ImageUtils.loadTexture('/static/scripts/demo/assets/cube.0.png');
             var materials = [
-            new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, side: THREE.FrontSide } ),
-            new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 1, transparent: true, opacity: 1, side: THREE.FrontSide } )
+                new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, side: THREE.FrontSide, map:texture } ),
+                new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 1, transparent: true, opacity: 1, side: THREE.FrontSide } )
             ];
             
-            this.multicube = new demo.cubes.MultiCube(this.data);
 
-            this.object    = THREE.SceneUtils.createMultiMaterialObject( this.multicube, materials );
-            
-
-            
-            this.scene.add(this.object);
-
+            this.multicube     = new demo.cubes.MultiCube(this.data);
+            this.mesh          = THREE.SceneUtils.createMultiMaterialObject( this.multicube, materials );
+            this.scene.add(this.mesh);
         }
 
-         
         private x:number = 0;
         private y:number = 0;
         private z:number = 0;
         private v:number = 1;
 
-        public render(): void 
-        {   
-            this.y += 1;
-
-            this.multicube.cubes.each((cube, offset, x, y, z) => {
+        public render(): void
+        {
+            //this.multicube.cubes.each((cube, offset, x, y, z) => {
                 
-                var cx = (x + Math.floor(this.x)) % this.data.width;
+            //    var cx = (x + Math.floor(this.x)) % this.data.width;
 
-                var cy = (y + Math.floor(this.y)) % this.data.height;
+            //    var cy = (y + Math.floor(this.y)) % this.data.height;
 
-                var cz = (z + Math.floor(this.z)) % this.data.depth;
+            //    var cz = (z + Math.floor(this.z)) % this.data.depth;
 
-                cube.setValue( this.data.get(cx, cy, cz) );
+            //    cube.setValue( this.data.get(cx, cy, cz) );
                     
-            });
+            //});
             
             this.renderer.render(this.scene, this.camera);
         }

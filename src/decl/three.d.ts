@@ -12,6 +12,9 @@ interface WebGLRenderingContext {}
 declare module THREE {
     export var REVISION: string;
 
+    export var LineStrip;
+    export var LinePieces;
+
     // GL STATE CONSTANTS
 
     export enum CullFace { }

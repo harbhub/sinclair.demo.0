@@ -32,19 +32,14 @@
                 app.render();
 
                 // simple animation
-                app.object.rotation.x = -0.03;
+               // app.mesh.rotation.x = -0.005;
+                app.mesh.rotation.y += 0.005;
+               // app.mesh.rotation.z += 0.005;
+      
 
-                app.object.rotation.y += 0.005;
-                
-                app.object.rotation.z += 0.01;
-
-
-                app.camera.position = new THREE.Vector3(0, 34.5, 10);
+                app.camera.position = new THREE.Vector3(0, 14.5, 10);
 
                 app.camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-
-              
             }
 
 
