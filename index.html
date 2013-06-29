@@ -20,7 +20,7 @@
             {
                 app = new demo.App( document.getElementById('demo'), 1800, 700 );
                 
-                console.log(app.object);
+                
 
                 render();
             }
@@ -34,12 +34,12 @@
                 // simple animation
                 app.object.rotation.x = -0.03;
 
-                app.object.rotation.y += 0.01;
+                app.object.rotation.y += 0.005;
                 
                 app.object.rotation.z += 0.01;
 
 
-                app.camera.position = new THREE.Vector3(0, 10.5, 10);
+                app.camera.position = new THREE.Vector3(0, 9.5, 10);
 
                 app.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
