@@ -22,6 +22,8 @@ module demo
         public data          : demo.data.Data3D<number>;
 
         public multicube     : demo.cubes.MultiCube;
+
+        public light         : THREE.Light;
         
         constructor ( element: any, width: number, height: number ) 
         {
@@ -58,10 +60,10 @@ module demo
         }
 
         private setup_data(): void {
-            this.data = new demo.data.Data3D<number>(16, 16, 16);
+            this.data = new demo.data.Data3D<number>(24, 24, 24);
             for(var i = 0; i < this.data.values.length; i++) { 
                 var n = Math.floor(Math.random() * 200);
-                if(n > 50) {
+                if(n > 100) {
                     this.data.values[i] = 0;
                 }
                 else {
@@ -72,11 +74,20 @@ module demo
 
         private setup_object():void 
         {
+            // create a point light
+            this.light = new THREE.PointLight( 0xFFFFFF );
+
+
+
+            // add to the scene
+            this.scene.add(this.light);
+
             // setup cube
             var texture   = THREE.ImageUtils.loadTexture('/static/scripts/demo/assets/cube.indexed.png');
             var materials = [
-                new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, side: THREE.FrontSide, map:texture } ),
-                new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 1, transparent: true, opacity: 1, side: THREE.FrontSide } )
+                //new THREE.MeshBasicMaterial( { color: 0xEEEEEE, wireframe: false, side: THREE.FrontSide, map:texture } ),
+               // new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true, wireframeLinewidth: 1, transparent: true, opacity: 0, side: THREE.FrontSide } )
+                new THREE.MeshLambertMaterial({ map: texture} )
             ];
             
 
@@ -92,8 +103,37 @@ module demo
 
         public render(): void
         {
+
+            // set its position
+            this.light.position.x = this.camera.position.x;
+            this.light.position.y = this.camera.position.y;
+            this.light.position.z = this.camera.position.z;
+
+
+            for(var i = 0; i < 100; i++){
+            var n = Math.floor( Math.random() * this.data.values.length );
+
+                var address = this.multicube.cubes.address(n);
+
+                var v = this.multicube.cubes.values[n].getValue();
+                if(v == 0){
+                    this.multicube.cubes.values[n].setValue(1);
+                } else {
+                    this.multicube.cubes.values[n].setValue(0);
+                }
+            }
+
+            //this.x = (Math.cos(this.v * Math.PI / 180.0) * 10) + 100;
+            //this.z = (Math.sin(this.v * Math.PI / 180.0)* 10)+ 100;
+            //this.v += 3.1;
+            
+            //this.mesh.position.x = -(this.x % 1);
+            //this.mesh.position.y = -(this.y % 1);
+            //this.mesh.position.z = -(this.z % 1);
+
+            
             //this.multicube.cubes.each((cube, offset, x, y, z) => {
-                
+
             //    var cx = (x + Math.floor(this.x)) % this.data.width;
 
             //    var cy = (y + Math.floor(this.y)) % this.data.height;
@@ -101,7 +141,6 @@ module demo
             //    var cz = (z + Math.floor(this.z)) % this.data.depth;
 
             //    cube.setValue( this.data.get(cx, cy, cz) );
-                    
             //});
             
             this.renderer.render(this.scene, this.camera);

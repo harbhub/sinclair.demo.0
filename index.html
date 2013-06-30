@@ -4,23 +4,29 @@
 
     <head>
 
-        <title>typescript + threejs starter</title>
+        <title>sinclair.demo.0</title>
+
+        <style type="text/css">
+            h1 {
+                font-family : 'Courier New';
+
+            }
+
+        </style>
 
         <script type="text/javascript" src="static/scripts/jquery/jquery.js"></script>
 
         <script type="text/javascript" src="static/scripts/threejs/three.js"></script>
 
         <script type="text/javascript" src="static/scripts/demo/demo.js"></script>
-        
+
         <script type="text/javascript">
             
             var app = null;
 
             function setup() 
             {
-                app = new demo.App( document.getElementById('demo'), 1800, 700 );
-                
-                
+                app = new demo.App( document.getElementById('demo'), 1800, 900 );
 
                 render();
             }
@@ -36,8 +42,13 @@
                 app.mesh.rotation.y += 0.005;
                 app.mesh.rotation.z += 0.005;
       
-
-                app.camera.position = new THREE.Vector3(0, 0, -13);
+                var distance = 32;
+                app.camera.position = new THREE.Vector3(0, 8,  -distance); // at front
+                //app.camera.position = new THREE.Vector3(0, 0,   distance); // at back
+                //app.camera.position = new THREE.Vector3(0, 20,  distance); // at top
+                //app.camera.position = new THREE.Vector3(0, -distance, distance); // at bottom
+                //app.camera.position = new THREE.Vector3(-distance, 0, distance); // at left
+                //app.camera.position = new THREE.Vector3(distance, 0,  distance); // at right
 
                 app.camera.lookAt(new THREE.Vector3(0, 0, 0));
             }
@@ -51,8 +62,9 @@
 
     <body>
 
+        <h1>sinclair demo 0</h1>
         <!-- rendering here -->
-
+        
         <div id="demo" style="border:solid 1px;"> </div>
 
 
