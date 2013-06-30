@@ -135,7 +135,9 @@ module demo.cubes
 
             // precompute the indices for this cube.
             this.adjacent_multicube_indices      = indexing.create_adjacent_multicube_indices(this.x, this.y, this.z);
+            
             this.adjacent_face_multicube_indices = indexing.create_adjacent_face_multicube_indices(this.x, this.y, this.z);
+
             this.adjacent_face_multicube_key     = [0, 0, 0, 0];
         }
 
@@ -208,20 +210,31 @@ module demo.cubes
                 for(var face_index = 0; face_index < 6; face_index ++) {
                     
                     var left   = this.multicube.cubes.get(index[face_index][0][0], index[face_index][0][1], index[face_index][0][2] );
+
                     var right  = this.multicube.cubes.get(index[face_index][1][0], index[face_index][1][1], index[face_index][1][2] );
+                    
                     var top    = this.multicube.cubes.get(index[face_index][2][0], index[face_index][2][1], index[face_index][2][2] );
+                    
                     var bottom = this.multicube.cubes.get(index[face_index][3][0], index[face_index][3][1], index[face_index][3][2] );
                     
                     this.adjacent_face_multicube_key[2] = (top    == null || top.value    == 0) ? 1 : 0;
+                    
                     this.adjacent_face_multicube_key[3] = (right  == null || right.value  == 0) ? 1 : 0;
+                    
                     this.adjacent_face_multicube_key[0] = (bottom == null || bottom.value == 0) ? 1 : 0;
+                    
                     this.adjacent_face_multicube_key[1] = (left   == null || left.value   == 0) ? 1 : 0;
                     
                     var offset         = indexing.cube_texture_index_hash[this.adjacent_face_multicube_key.join('')];
+                    
                     var texcoord_index = (face_index * 4);
+                    
                     this.texcoords[texcoord_index + 0].x = div * offset; 
+                    
                     this.texcoords[texcoord_index + 1].x = div * (offset + 1);
+                    
                     this.texcoords[texcoord_index + 2].x = div * (offset + 1);
+                    
                     this.texcoords[texcoord_index + 3].x = div * offset;                   
                 }
             }

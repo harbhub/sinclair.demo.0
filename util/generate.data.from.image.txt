@@ -1,0 +1,30 @@
+﻿        static void Main(string[] args)
+        {
+            var bitmap = new Bitmap("c:/input/logo.png");
+            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            StringBuilder builder = new StringBuilder();
+            for (int y = 0; y < bitmap.Height; y++)
+            {
+                for (int x = 0; x < bitmap.Width; x++)
+                {
+                    var c = bitmap.GetPixel(x, y);
+
+                    if (c.R == 255)
+                    {
+                        builder.Append("1, ");
+                    }
+                    else
+                    {
+                        builder.Append("0, ");
+                    }
+
+                    Console.Write(c.R);
+                }
+            }
+
+            File.WriteAllText("C:/input/data.txt", builder.ToString());
+
+            Console.ReadLine();
+
+        }
