@@ -58,7 +58,7 @@ module demo
         }
 
         private setup_data(): void {
-            this.data = new demo.data.Data3D<number>(12, 12, 12);
+            this.data = new demo.data.Data3D<number>(16, 16, 16);
             for(var i = 0; i < this.data.values.length; i++) { 
                 var n = Math.floor(Math.random() * 200);
                 if(n > 50) {
@@ -73,7 +73,7 @@ module demo
         private setup_object():void 
         {
             // setup cube
-            var texture   = THREE.ImageUtils.loadTexture('/static/scripts/demo/assets/cube.0.png');
+            var texture   = THREE.ImageUtils.loadTexture('/static/scripts/demo/assets/cube.indexed.png');
             var materials = [
                 new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, side: THREE.FrontSide, map:texture } ),
                 new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 1, transparent: true, opacity: 1, side: THREE.FrontSide } )

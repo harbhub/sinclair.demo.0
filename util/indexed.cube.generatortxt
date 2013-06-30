@@ -1,0 +1,72 @@
+﻿
+/// C# method to generate a Indexed Cube Texture.
+public Bitmap CreateIndexedCubeTexture(int width, int linewidth, Color background, Color lineColor)
+{
+    var bitmap     = new Bitmap(width * 16, width);
+
+    using (var graphics = Graphics.FromImage(bitmap))
+    {
+        var words = new string[] {  "0000", "0001", "0010", "0011",
+                                    "0100", "0101", "0110", "0111", 
+                                    "1000", "1001", "1010", "1011", 
+                                    "1100", "1101", "1110", "1111" };
+
+        var lines = new Line[4];
+        lines[0] = new Line { Start = new Point(0, (linewidth / 2)), End = new Point(width, (linewidth / 2)) };
+        lines[1] = new Line { Start = new Point((width) - (linewidth / 2), 0), End = new Point((width) - (linewidth / 2), width) };
+        lines[2] = new Line { Start = new Point(width, ((width - 1) - (linewidth / 2)) + 1), End = new Point(0, ((width - 1) - (linewidth / 2)) + 1) };
+        lines[3] = new Line { Start = new Point((linewidth / 2), width), End = new Point((linewidth / 2), 0) };
+
+        int space = width;
+        int top   = 0;
+
+        for (int i = 0; i < 16; i++)
+        {
+            var word = words[i];
+
+            graphics.FillRectangle(new SolidBrush(background), i * space, top, width, width);
+
+            if (word[0] == '1')
+            {
+                var start = lines[0].Start;
+                var end = lines[0].End;
+                start.X += (i * space);
+                start.Y += top;
+                end.X += (i * space);
+                end.Y += top;
+                graphics.DrawLine(new Pen(new SolidBrush(lineColor), linewidth), start, end);
+            }
+            if (word[1] == '1')
+            {
+                var start = lines[1].Start;
+                var end = lines[1].End;
+                start.X += (i * space);
+                start.Y += top;
+                end.X += (i * space);
+                end.Y += top;
+                graphics.DrawLine(new Pen(new SolidBrush(lineColor), linewidth), start, end);
+            }
+            if (word[2] == '1')
+            {
+                var start = lines[2].Start;
+                var end = lines[2].End;
+                start.X += (i * space);
+                start.Y += top;
+                end.X += (i * space);
+                end.Y += top;
+                graphics.DrawLine(new Pen(new SolidBrush(lineColor), linewidth), start, end);
+            }
+            if (word[3] == '1')
+            {
+                var start = lines[3].Start;
+                var end = lines[3].End;
+                start.X += (i * space);
+                start.Y += top;
+                end.X += (i * space);
+                end.Y += top;
+                graphics.DrawLine(new Pen(new SolidBrush(lineColor), linewidth), start, end);
+            }
+        }
+    }
+    return bitmap;
+}

@@ -105,8 +105,70 @@ module demo.cubes
             this.multicube.verticesNeedUpdate  = true;                  
         }
 
+        public computeUVConfiguration(): void {
+
+            var table = {
+
+                right :  [ [ 0, 0,-1],   // left 
+                           [ 0, 0, 1],   // right
+                           [ 0, 1, 0],   // top
+                           [ 0,-1, 0] ], // bottom
+                left  :  [ [ 0, 0, 1],   // left 
+                           [ 0, 0,-1],   // right
+                           [ 0, 1, 0],   // top
+                           [ 0,-1, 0] ], // bottom
+                top    : [ [-1, 0, 0],   // left 
+                           [ 1, 0, 0],   // right
+                           [ 0, 0, 1],   // top
+                           [ 0, 0,-1] ], // bottom
+                bottom : [ [-1, 0, 0],   // left 
+                           [ 1, 0, 0],   // right
+                           [ 0, 0,-1],   // top
+                           [ 0, 0, 1] ], // bottom
+                back  :  [ [ 1, 0, 0],   // left 
+                           [-1, 0, 0],   // right
+                           [ 0, 1, 0],   // top
+                           [ 0,-1, 0] ], // bottom
+                front :  [ [-1, 0 , 0],  // left 
+                           [ 1, 0, 0],   // right
+                           [ 0, 1, 0],   // top
+                           [ 0,-1, 0] ]  // bottom
+            };
+
+            var facetable = [table.right, 
+                             table.left, 
+                             table.top, 
+                             table.bottom, 
+                             table.back, 
+                             table.front];
+             
+            for(var face_index = 0; face_index < 6; face_index ++) {
+
+                var left   = this.multicube.cubes.get(facetable[face_index][0][0], facetable[face_index][0][1], facetable[face_index][0][2] );
+                var right  = this.multicube.cubes.get(facetable[face_index][1][0], facetable[face_index][1][1], facetable[face_index][1][2] );
+                var top    = this.multicube.cubes.get(facetable[face_index][2][0], facetable[face_index][2][1], facetable[face_index][2][2] );
+                var bottom = this.multicube.cubes.get(facetable[face_index][3][0], facetable[face_index][3][1], facetable[face_index][3][2] );
+                
+                var flags = [0, 0, 0, 0];
+                if      (top == null)        flags[0] = 1;
+                else if (top.value == 0)     flags[0] = 1;
+                else                         flags[0] = 0;
+                if      (right == null)      flags[1] = 1;
+                else if (right.value == 0)   flags[1] = 1;
+                else                         flags[1] = 0;
+                if      (bottom == null)     flags[2] = 1;
+                else if (bottom.value == 0)  flags[2] = 1;
+                else                         flags[2] = 0;  
+                if      (left == null)       flags[3] = 1;
+                else if (left.value == 0)    flags[3] = 1;
+                else                         flags[3] = 0;                       
+            }
+        }
+
         public computeFaceVisibility (includeAdjancent:boolean): void {
             
+            
+
             var adjacent_index = [ [this.x + 1, this.y, this.z], 
 
                                    [this.x - 1, this.y, this.z],  
@@ -181,33 +243,40 @@ module demo.cubes
         
         private setup(data:demo.data.Data3D<number>): void {  
             
+            var div = 1 / 16;
+
             // cube lookup table
             var table = {
 
-                positions :  [ new THREE.Vector3(0, 0, 0),    // 0
-                               new THREE.Vector3(0, 1, 0),    // 1
-                               new THREE.Vector3(1, 1, 0),    // 2
-                               new THREE.Vector3(1, 0, 0),    // 3
-                               new THREE.Vector3(1, 0, 1),    // 4
-                               new THREE.Vector3(1, 1, 1),    // 5
-                               new THREE.Vector3(0, 1, 1),    // 6
-                               new THREE.Vector3(0, 0, 1) ],  // 7
-                 normals   : [ new THREE.Vector3( 1, 0, 0),   // 0
-                               new THREE.Vector3(-1, 0, 0),   // 1
-                               new THREE.Vector3( 0, 1, 0),   // 2
-                               new THREE.Vector3( 0,-1, 0),   // 3
-                               new THREE.Vector3( 0, 0, 1),   // 4
-                               new THREE.Vector3( 0, 0,-1) ], // 6
-                 texcoords : [ new THREE.Vector2(0, 0),       // 0
-                               new THREE.Vector2(1, 0),       // 1
-                               new THREE.Vector2(1, 1),       // 2
-                               new THREE.Vector2(0, 1) ],     // 3  
-                index_positions : [  [3, 2, 5, 4],   // face right    
-                                     [7, 6, 1, 0],   // face left   
-                                     [5, 2, 1, 6],   // face top 
-                                     [7, 0, 3, 4],   // face bottom    
-                                     [4, 5, 6, 7],   // face back
-                                     [0, 1, 2, 3] ], // face front  
+                positions : [ new THREE.Vector3(0, 0, 0),    // 0
+                              new THREE.Vector3(0, 1, 0),    // 1
+                              new THREE.Vector3(1, 1, 0),    // 2
+                              new THREE.Vector3(1, 0, 0),    // 3
+                              new THREE.Vector3(1, 0, 1),    // 4
+                              new THREE.Vector3(1, 1, 1),    // 5
+                              new THREE.Vector3(0, 1, 1),    // 6
+                              new THREE.Vector3(0, 0, 1) ],  // 7
+                normals   : [ new THREE.Vector3( 1, 0, 0),   // 0
+                              new THREE.Vector3(-1, 0, 0),   // 1
+                              new THREE.Vector3( 0, 1, 0),   // 2
+                              new THREE.Vector3( 0,-1, 0),   // 3
+                              new THREE.Vector3( 0, 0, 1),   // 4
+                              new THREE.Vector3( 0, 0,-1) ], // 6
+                //texcoords : [ new THREE.Vector2(0, 0),       // 0
+                //              new THREE.Vector2(1, 0),       // 1
+                //              new THREE.Vector2(1, 1),       // 2
+                //              new THREE.Vector2(0, 1) ],     // 3  
+                 texcoords : [ new THREE.Vector2(div * 15, 0),       // 0
+                              new THREE.Vector2(div * 16, 0),       // 1
+                              new THREE.Vector2(div * 16, 1),       // 2
+                              new THREE.Vector2(div * 15, 1) ],     // 3  
+
+                index_positions : [  [4, 3, 2, 5],   // face right    
+                                     [0, 7, 6, 1],   // face left   
+                                     [2, 1, 6, 5],   // face top 
+                                     [4, 7, 0, 3],   // face bottom    
+                                     [7, 4, 5, 6],   // face back
+                                     [3, 0, 1, 2] ], // face front 
 
                  index_normals   : [ [0, 0, 0, 0],   // face right    
                                      [1, 1, 1, 1],   // face left          

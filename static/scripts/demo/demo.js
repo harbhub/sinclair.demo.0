@@ -144,6 +144,81 @@ var demo;
                 this.multicube.verticesNeedUpdate = true;
             };
 
+            Cube.prototype.computeUVConfiguration = function () {
+                var table = {
+                    right: [
+                        [0, 0, -1],
+                        [0, 0, 1],
+                        [0, 1, 0],
+                        [0, -1, 0]
+                    ],
+                    left: [
+                        [0, 0, 1],
+                        [0, 0, -1],
+                        [0, 1, 0],
+                        [0, -1, 0]
+                    ],
+                    top: [
+                        [-1, 0, 0],
+                        [1, 0, 0],
+                        [0, 0, 1],
+                        [0, 0, -1]
+                    ],
+                    bottom: [
+                        [-1, 0, 0],
+                        [1, 0, 0],
+                        [0, 0, -1],
+                        [0, 0, 1]
+                    ],
+                    back: [
+                        [1, 0, 0],
+                        [-1, 0, 0],
+                        [0, 1, 0],
+                        [0, -1, 0]
+                    ],
+                    front: [
+                        [-1, 0, 0],
+                        [1, 0, 0],
+                        [0, 1, 0],
+                        [0, -1, 0]
+                    ]
+                };
+
+                var facetable = [
+                    table.right,
+                    table.left,
+                    table.top,
+                    table.bottom,
+                    table.back,
+                    table.front
+                ];
+
+                for (var face_index = 0; face_index < 6; face_index++) {
+                    var left = this.multicube.cubes.get(facetable[face_index][0][0], facetable[face_index][0][1], facetable[face_index][0][2]);
+                    var right = this.multicube.cubes.get(facetable[face_index][1][0], facetable[face_index][1][1], facetable[face_index][1][2]);
+                    var top = this.multicube.cubes.get(facetable[face_index][2][0], facetable[face_index][2][1], facetable[face_index][2][2]);
+                    var bottom = this.multicube.cubes.get(facetable[face_index][3][0], facetable[face_index][3][1], facetable[face_index][3][2]);
+
+                    var flags = [0, 0, 0, 0];
+                    if (top == null)
+                        flags[0] = 1; else if (top.value == 0)
+                        flags[0] = 1; else
+                        flags[0] = 0;
+                    if (right == null)
+                        flags[1] = 1; else if (right.value == 0)
+                        flags[1] = 1; else
+                        flags[1] = 0;
+                    if (bottom == null)
+                        flags[2] = 1; else if (bottom.value == 0)
+                        flags[2] = 1; else
+                        flags[2] = 0;
+                    if (left == null)
+                        flags[3] = 1; else if (left.value == 0)
+                        flags[3] = 1; else
+                        flags[3] = 0;
+                }
+            };
+
             Cube.prototype.computeFaceVisibility = function (includeAdjancent) {
                 var adjacent_index = [
                     [this.x + 1, this.y, this.z],
@@ -197,6 +272,8 @@ var demo;
             }
             MultiCube.prototype.setup = function (data) {
                 var _this = this;
+                var div = 1 / 16;
+
                 var table = {
                     positions: [
                         new THREE.Vector3(0, 0, 0),
@@ -217,18 +294,18 @@ var demo;
                         new THREE.Vector3(0, 0, -1)
                     ],
                     texcoords: [
-                        new THREE.Vector2(0, 0),
-                        new THREE.Vector2(1, 0),
-                        new THREE.Vector2(1, 1),
-                        new THREE.Vector2(0, 1)
+                        new THREE.Vector2(div * 15, 0),
+                        new THREE.Vector2(div * 16, 0),
+                        new THREE.Vector2(div * 16, 1),
+                        new THREE.Vector2(div * 15, 1)
                     ],
                     index_positions: [
-                        [3, 2, 5, 4],
-                        [7, 6, 1, 0],
-                        [5, 2, 1, 6],
-                        [7, 0, 3, 4],
-                        [4, 5, 6, 7],
-                        [0, 1, 2, 3]
+                        [4, 3, 2, 5],
+                        [0, 7, 6, 1],
+                        [2, 1, 6, 5],
+                        [4, 7, 0, 3],
+                        [7, 4, 5, 6],
+                        [3, 0, 1, 2]
                     ],
                     index_normals: [
                         [0, 0, 0, 0],
@@ -362,7 +439,7 @@ var demo;
         };
 
         App.prototype.setup_data = function () {
-            this.data = new demo.data.Data3D(12, 12, 12);
+            this.data = new demo.data.Data3D(16, 16, 16);
             for (var i = 0; i < this.data.values.length; i++) {
                 var n = Math.floor(Math.random() * 200);
                 if (n > 50) {
@@ -374,7 +451,7 @@ var demo;
         };
 
         App.prototype.setup_object = function () {
-            var texture = THREE.ImageUtils.loadTexture('/static/scripts/demo/assets/cube.0.png');
+            var texture = THREE.ImageUtils.loadTexture('/static/scripts/demo/assets/cube.indexed.png');
             var materials = [
                 new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: false, side: THREE.FrontSide, map: texture }),
                 new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, wireframeLinewidth: 1, transparent: true, opacity: 1, side: THREE.FrontSide })
